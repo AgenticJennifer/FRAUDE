@@ -1,0 +1,28 @@
+# FRAUDE Scope Configuration Example
+# Copy this file to scope.yaml and edit for your environment
+
+# Metadata - required for all scope configs
+metadata:
+  authorized_by: "Your Name <you@example.com>"  # Who authorized this scope
+  description: "Pentest scope for example.com engagement"  # Optional description
+
+# IP ranges in CIDR notation
+# Supports both single IPs and CIDR blocks
+ip_ranges:
+  - "192.168.1.0/24"
+  - "10.0.0.50"  # Single IP as /32
+
+# Domains to target
+# Supports wildcards for subdomains (e.g., *.example.com matches sub.example.com)
+domains:
+  - "example.com"
+  - "sub.example.com"
+  - "*.example.org"
+
+# Exclusion list - these are ALWAYS denied, even if they match above
+# Takes precedence over allow lists
+exclusions:
+  domains:
+    - "internal.example.com"  # Exclude internal subdomains
+  ip_ranges:
+    - "192.168.1.100"  # Exclude specific IP
