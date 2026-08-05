@@ -37,6 +37,6 @@ class ScopeConfig:
     ip_ranges: List[str] = field(default_factory=list)
     exclude_domains: List[str] = field(default_factory=list)
     exclude_ip_ranges: List[str] = field(default_factory=list)
-    ports: Optional[List[int]] = None  # None = any port
+    ports: Optional[List[int]] = None
     strict_resolution: bool = False
     require_dns_match: bool = False
