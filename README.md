@@ -1,6 +1,6 @@
 # Fraude
 
-![Fraude](assets/fraude-banner.jpg)
+![Fraude](assets/fraude-banner.svg)
 
 **Framework for Automated Understanding & Discovery of Exploits**
 
@@ -13,7 +13,7 @@ MCP server that lets Claude drive authorized pentest tools (`nmap`, `ffuf`, `nuc
 | 1 | Core Foundation & Scope Safety Engine | **Done** |
 | 2 | Recon & Scan Tooling Integrations | **Done** |
 | 3 | Vulnerability Mapping & HITL Control | **Done** |
-| 4 | Reporting + constrained path suggestions | **Done** — 47/47 tests (no payload generator) |
+| 4 | Reporting + constrained path suggestions | **Done** |
 | 5 | Web UI (Anthropic design system) | **Done** |
 
 ## Quick start
@@ -42,7 +42,7 @@ python -m fraude.ui.app
 # open http://127.0.0.1:8787
 ```
 
-Banner: `assets/fraude-banner.jpg`
+Banner: `assets/fraude-banner.svg` · Mark: `assets/fraude-mark.svg`
 
 ## Tools
 

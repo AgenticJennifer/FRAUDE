@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="480" viewBox="0 0 1200 480" role="img" aria-label="Fraude">
+  <rect width="1200" height="480" fill="#141413"/>
+  <g stroke="#6a9bcc" stroke-width="1" fill="none" opacity="0.35">
+    <path d="M980 40 L1120 120 L1180 80 L1140 200 L1200 260"/>
+    <path d="M1000 300 L1100 220 L1180 320 L1080 380"/>
+    <path d="M1040 140 L1100 180 L1160 160"/>
+  </g>
+  <g fill="#6a9bcc" opacity="0.45">
+    <circle cx="980" cy="40" r="3"/>
+    <circle cx="1120" cy="120" r="3"/>
+    <circle cx="1180" cy="80" r="2.5"/>
+    <circle cx="1140" cy="200" r="3"/>
+    <circle cx="1100" cy="220" r="2.5"/>
+    <circle cx="1180" cy="320" r="3"/>
+    <circle cx="1080" cy="380" r="2.5"/>
+    <circle cx="1040" cy="140" r="2.5"/>
+  </g>
+  <text x="600" y="230" text-anchor="middle"
+        font-family="Poppins, Arial, Helvetica, sans-serif"
+        font-size="96" font-weight="700" fill="#faf9f5"
+        letter-spacing="-1.5">Fraude</text>
+  <rect x="420" y="252" width="360" height="4" rx="2" fill="#d97757"/>
+  <text x="600" y="300" text-anchor="middle"
+        font-family="Lora, Georgia, serif"
+        font-size="22" fill="#b0aea5">Scope-enforced pentest orchestration</text>
+</svg>
