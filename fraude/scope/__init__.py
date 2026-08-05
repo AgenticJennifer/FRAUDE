@@ -1,15 +1,11 @@
-"""Scope validation module."""
-
-from .models import ScopeConfig, ScopeViolation, ScopeConfigError, Target
-from .validator import load_scope, validate_target, get_scope, reset_scope
+from .models import ScopeConfig, ScopeMetadata
+from .validator import load_scope, validate_target, ScopeConfigError, ScopeViolation
 
 __all__ = [
     "ScopeConfig",
-    "ScopeViolation",
-    "ScopeConfigError", 
-    "Target",
+    "ScopeMetadata",
     "load_scope",
     "validate_target",
-    "get_scope",
-    "reset_scope",
+    "ScopeConfigError",
+    "ScopeViolation",
 ]
