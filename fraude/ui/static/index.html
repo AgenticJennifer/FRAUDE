@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fraude</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;--panel:#1c1c1a;--border:rgba(176,174,165,0.22)}
+*{box-sizing:border-box}body{margin:0;background:var(--dark);color:var(--light);font-family:Lora,Georgia,serif;min-height:100vh}
+header{padding:28px 40px 22px;border-bottom:1px solid var(--border);display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.wordmark{font-family:Poppins,Arial,sans-serif;font-weight:700;font-size:32px;letter-spacing:-0.02em;margin:0;line-height:1}
+.accent{width:44px;height:3px;background:var(--orange);border-radius:2px;margin-top:10px}
+.header-meta{text-align:right;font-size:13px;color:var(--mid-gray);line-height:1.5}
+.header-meta strong{color:var(--light);font-family:Poppins,sans-serif;font-weight:500}
+main{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:28px 40px 56px;max-width:1180px}
+@media(max-width:900px){main{grid-template-columns:1fr;padding:20px}header{flex-direction:column;align-items:flex-start;padding:20px}.header-meta{text-align:left}}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:22px 24px}
+.card h2{font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid-gray);margin:0 0 16px}
+label{display:block;font-family:Poppins,Arial,sans-serif;font-size:12px;color:var(--mid-gray);margin-bottom:6px}
+input[type=text],select{width:100%;background:var(--dark);border:1px solid var(--border);color:var(--light);border-radius:8px;padding:10px 12px;font-family:Lora,Georgia,serif;font-size:15px;margin-bottom:12px}
+input:focus,select:focus{outline:none;border-color:var(--orange)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+button{font-family:Poppins,Arial,sans-serif;font-weight:500;font-size:13px;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;background:var(--orange);color:var(--dark)}
+button.secondary{background:transparent;color:var(--light);border:1px solid var(--border)}
+button.danger{background:transparent;color:var(--orange);border:1px solid rgba(217,119,87,.55)}
+button:disabled{opacity:.4;cursor:not-allowed}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{font-family:Poppins,sans-serif;font-size:12px;padding:5px 10px;border-radius:999px;background:rgba(250,249,245,.06);border:1px solid var(--border);color:var(--light-gray)}
+.chip.warn{border-color:rgba(217,119,87,.45);color:var(--orange)}
+.out{background:var(--dark);border:1px solid var(--border);border-radius:8px;padding:14px;font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.5;max-height:340px;overflow:auto;white-space:pre-wrap;word-break:break-word;color:var(--light-gray)}
+.out.ok{border-color:rgba(120,140,93,.5)}.out.bad{border-color:rgba(217,119,87,.55)}.out.busy{border-color:rgba(106,155,204,.45);color:var(--mid-gray)}
+.span2{grid-column:1/-1}.pill{display:inline-block;font-family:Poppins,sans-serif;font-size:11px;padding:2px 8px;border-radius:999px}
+.pill.yes{background:rgba(120,140,93,.22);color:#b7c9a0}.pill.no{background:rgba(217,119,87,.18);color:#e8a990}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-family:Poppins,sans-serif;font-weight:500;color:var(--mid-gray);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+footer{max-width:1180px;margin:0 auto;padding:0 40px 40px;color:var(--mid-gray);font-size:12px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal-backdrop.open{display:flex}.modal{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:420px;width:100%}
+.modal h3{font-family:Poppins,sans-serif;font-weight:600;font-size:16px;margin:0 0 10px}.modal p{color:var(--mid-gray);font-size:14px;margin:0 0 18px;line-height:1.55}.modal .row{justify-content:flex-end}
+</style>
+</head>
+<body>
+<header>
+  <div><p class="wordmark">Fraude</p><div class="accent"></div></div>
+  <div class="header-meta" id="scopeMeta">Loading scope…</div>
+</header>
+<main>
+  <section class="card">
+    <h2>Target</h2>
+    <label for="target">Domain · IP · URL</label>
+    <input id="target" type="text" value="scanme.nmap.org" />
+    <div class="row">
+      <button id="btnValidate">Validate scope</button>
+      <button class="secondary" id="btnRefresh">Refresh scope</button>
+    </div>
+  </section>
+  <section class="card">
+    <h2>Authorized surface</h2>
+    <div id="scopeChips" class="chips"></div>
+    <div style="height:14px"></div>
+    <h2>Exclusions</h2>
+    <div id="excludeChips" class="chips"></div>
+  </section>
+  <section class="card">
+    <h2>Tools</h2>
+    <label for="tool">Select</label>
+    <select id="tool">
+      <option value="nmap">nmap scan</option>
+      <option value="sub">subdomain enum</option>
+      <option value="httpx">http probe</option>
+      <option value="nuclei">nuclei (HITL)</option>
+      <option value="semgrep">semgrep (HITL)</option>
+      <option value="suggest">suggest path (HITL)</option>
+    </select>
+    <div class="row">
+      <button id="btnRun">Run</button>
+      <button class="secondary" id="btnReport">Generate report</button>
+    </div>
+    <p style="margin:12px 0 0;font-size:13px;color:var(--mid-gray)">High-risk tools open a confirm modal. Docker required for live scans.</p>
+  </section>
+  <section class="card">
+    <h2>Output</h2>
+    <div id="output" class="out">Ready.</div>
+  </section>
+  <section class="card span2">
+    <h2>Audit stream</h2>
+    <div class="row" style="margin-bottom:12px"><button class="secondary" id="btnAudit">Refresh</button></div>
+    <table><thead><tr><th>Type</th><th>Target</th><th>Result</th><th>Detail</th></tr></thead>
+    <tbody id="auditBody"><tr><td colspan="4" style="color:var(--mid-gray)">No events yet.</td></tr></tbody></table>
+  </section>
+</main>
+<footer>Fraude UI · Anthropic-inspired tokens (Poppins / Lora) · Same scope + HITL gates as MCP · http://127.0.0.1:8787</footer>
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <h3>Confirm high-risk action</h3>
+    <p id="modalText">This tool requires explicit confirmation.</p>
+    <div class="row">
+      <button class="secondary" id="modalCancel">Cancel</button>
+      <button class="danger" id="modalOk">Confirm &amp; run</button>
+    </div>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);const HITL=new Set(['nuclei','semgrep','suggest']);
+async function api(path,opts){const res=await fetch(path,{headers:{'Content-Type':'application/json'},...opts});const data=await res.json().catch(()=>({detail:res.statusText}));if(!res.ok)throw new Error(data.detail||data.error||res.statusText);return data}
+function setOut(obj,state){const el=$('output');el.className='out'+(state?' '+state:'');el.textContent=typeof obj==='string'?obj:JSON.stringify(obj,null,2)}
+function busy(on){['btnValidate','btnRun','btnReport','btnRefresh','btnAudit'].forEach(id=>$(id).disabled=!!on)}
+async function loadScope(){try{const s=await api('/api/scope');if(!s.ok){$('scopeMeta').textContent=s.error||'Scope error';return}$('scopeMeta').innerHTML=`<strong>${s.engagement||'engagement'}</strong><br>${s.authorized_by||''}`;const chips=$('scopeChips');chips.innerHTML='';[...(s.domains||[]),...(s.ip_ranges||[])].forEach(d=>{const c=document.createElement('span');c.className='chip';c.textContent=d;chips.appendChild(c)});const ex=$('excludeChips');ex.innerHTML='';const excl=[...(s.exclude_domains||[]),...(s.exclude_ip_ranges||[])];if(!excl.length){const c=document.createElement('span');c.className='chip';c.textContent='none';ex.appendChild(c)}else{excl.forEach(d=>{const c=document.createElement('span');c.className='chip warn';c.textContent=d;ex.appendChild(c)})}}catch(e){$('scopeMeta').textContent=String(e.message||e)}}
+async function validateTarget(){const target=$('target').value.trim();if(!target)return;busy(true);setOut('Validating…','busy');try{const res=await api('/api/validate',{method:'POST',body:JSON.stringify({target})});setOut(res,res.allowed?'ok':'bad');loadAudit()}catch(e){setOut({error:String(e.message||e)},'bad')}finally{busy(false)}}
+async function runTool(confirm){const target=$('target').value.trim();const tool=$('tool').value;if(!target)return;busy(true);setOut(`Running ${tool}…`,'busy');try{const res=await api('/api/run',{method:'POST',body:JSON.stringify({tool,target,confirm:!!confirm,findings_summary:target})});const ok=res.ok!==false&&res.error!=='hitl_required'&&res.error!=='scope_violation';setOut(res,ok?'ok':'bad');loadAudit()}catch(e){setOut({error:String(e.message||e)},'bad')}finally{busy(false)}}
+function requestRun(){const tool=$('tool').value;if(HITL.has(tool)){$('modalText').textContent=`“${tool}” is high-risk. Confirm only if this target is authorized.`;$('modal').classList.add('open');return}runTool(false)}
+async function makeReport(){busy(true);setOut('Generating report…','busy');try{const res=await api('/api/report',{method:'POST',body:'{}'});setOut(res,res.ok?'ok':'bad')}catch(e){setOut({error:String(e.message||e)},'bad')}finally{busy(false)}}
+async function loadAudit(){try{const res=await api('/api/audit?limit=30');const body=$('auditBody');const lines=res.lines||[];if(!lines.length){body.innerHTML='<tr><td colspan="4" style="color:var(--mid-gray)">No events yet.</td></tr>';return}const events=[];for(const ln of lines){try{events.push(JSON.parse(ln))}catch{}}body.innerHTML=events.map(e=>{const typ=e.type||'',target=e.target||'';let result='',detail=e.reason||e.image||'';if(typ==='scope_decision')result=e.allowed?'<span class="pill yes">allowed</span>':'<span class="pill no">denied</span>';else if(typ==='execution'){result=`<span class="pill ${e.returncode===0?'yes':'no'}">exit ${e.returncode}</span>`;detail=(e.image||'')+(e.duration_s!=null?` · ${e.duration_s}s`:'')}return `<tr><td>${typ}</td><td>${target}</td><td>${result}</td><td>${detail}</td></tr>`}).join('')}catch(e){$('auditBody').innerHTML=`<tr><td colspan="4">${String(e.message||e)}</td></tr>`}}
+$('btnValidate').onclick=validateTarget;$('btnRefresh').onclick=loadScope;$('btnRun').onclick=requestRun;$('btnReport').onclick=makeReport;$('btnAudit').onclick=loadAudit;
+$('modalCancel').onclick=()=>$('modal').classList.remove('open');
+$('modalOk').onclick=()=>{$('modal').classList.remove('open');runTool(true)};
+$('target').addEventListener('keydown',e=>{if(e.key==='Enter')validateTarget()});
+loadScope();loadAudit();
+</script>
+</body>
+</html>
