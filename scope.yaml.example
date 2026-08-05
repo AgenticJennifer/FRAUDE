@@ -4,36 +4,23 @@
 # will refuse to start.
 
 metadata:
-  authorized_by: "security-team@example.com"   # REQUIRED — non-empty
+  authorized_by: "security-team@example.com"
   engagement_name: "example-engagement"
   notes: "Replace with real authorization ticket / SOW reference"
 
-# At least one of domains or ip_ranges must be present.
 domains:
-  - example.com                # exact apex
-  - "*.example.com"            # subdomains only (does NOT match example.com)
-  - scanme.nmap.org            # public test target provided by nmap project
+  - example.com
+  - "*.example.com"
+  - scanme.nmap.org
 
 ip_ranges:
-  - "127.0.0.0/8"              # localhost
-  - "10.0.0.0/8"               # RFC1918 example
-  # - "203.0.113.0/24"         # documentation range
+  - "127.0.0.0/8"
+  - "10.0.0.0/8"
 
-# Exclusions always win over inclusions
 exclude_domains:
   - "admin.example.com"
-  # - "*.internal.example.com"
 
-exclude_ip_ranges:
-  # - "10.0.0.1/32"
+exclude_ip_ranges: []
 
-# Optional: restrict which ports may be scanned (omit or null = any port)
-# ports: [80, 443, 8080]
-
-# When true, every domain target is resolved and the resulting IPs
-# must also fall inside ip_ranges (or the domain itself must be listed).
 strict_resolution: false
-
-# When true, a domain must appear in the domains list even if its
-# resolved IP happens to land inside an authorized CIDR.
 require_dns_match: false
