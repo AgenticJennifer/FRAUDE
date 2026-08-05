@@ -1,40 +1,24 @@
-# FRAUDE - One Page Summary
+# FRAUDE — one-page summary
 
-## What is FRAUDE?
+FRAUDE is an MCP server that turns Claude into a scope-constrained pentest assistant.
 
-FRAUDE (Framework for Automated Understanding & Discovery of Exploits) is an MCP server that safely orchestrates pentest tools (nmap, ffuf, nuclei, semgrep, sublist3r, httpx) inside hardened Docker containers, gated by deterministic scope enforcement.
+**What it does (Phases 1–4)**  
+- Loads a `scope.yaml` that lists authorized domains, wildcards, and CIDRs.  
+- Exposes MCP tools for recon (nmap, subfinder, httpx), vulnerability scanning (nuclei, semgrep), report synthesis, and high-level attack-path suggestions.  
+- Provides a Docker runner that refuses to start any container unless the target has already passed validation.  
+- Writes every decision and execution to a JSONL audit log; `generate_report` turns that into markdown.
 
-## Current Status: Phase 1 Complete
+**What it deliberately does not do**  
+- No free-form payload generation, shellcode, or WAF-bypass strings.  
+- No silent bypass of the scope gate.
 
-The scope safety engine is built and tested:
-- 28 unit tests all passing
-- IP CIDR matching with exclusions
-- Domain/wildcard matching (subdomain-only)
-- Hard fail-closed on invalid config
-- Docker wrapper with hardened defaults
+**Safety rules that will not be relaxed**  
+1. Scope file fails closed on any configuration error.  
+2. Wildcards never match the apex domain.  
+3. Exclusions beat inclusions.  
+4. All tool execution goes through one function that re-validates the target.  
+5. Containers run non-root, read-only, capability-dropped, resource-limited.  
+6. High-risk tools require explicit `confirm=True` (HITL).
 
-## Key Components
-
-| Component | File | Purpose |
-|-----------|------|---------|
-| Scope Config | `fraude/scope/models.py` | Data models for scope |
-| Validator | `fraude/scope/validator.py` | Safety-critical enforcement |
-| Docker Wrapper | `fraude/executor/docker_wrapper.py` | Container orchestration |
-| Audit Logger | `fraude/audit/logger.py` | JSONL event logging |
-| MCP Server | `fraude/server.py` | Tool entrypoint |
-
-## Scope Enforcement Rules
-
-1. **Fail Closed**: Invalid config raises `ScopeConfigError`
-2. **Exclusions Win**: If in exclusion list, always denied
-3. **Wildcards Subdomain-Only**: `*.example.com` ≠ `example.com`
-4. **Single Chokepoint**: All tool execution via `run_containerized_tool()`
-
-## Next Steps (Phase 2)
-
-Register MCP tools:
-- `run_nmap_scan` - Network reconnaissance
-- `run_subdomain_enum` - Subdomain enumeration  
-- `run_http_probe` - HTTP probing
-
-Each calls `run_containerized_tool()` for automatic scope enforcement.
+**How to extend safely**  
+Any new tool must call `run_containerized_tool()`. Anything that bypasses that function has defeated the entire point of Phase 1.

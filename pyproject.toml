@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fraude"
+version = "0.4.0"
+description = "FRAUDE — Framework for Automated Understanding & Discovery of Exploits"
+requires-python = ">=3.11"
+dependencies = [
+  "mcp>=2.0.0",
+  "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+fraude = "fraude.server:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["fraude*"]

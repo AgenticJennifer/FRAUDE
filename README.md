@@ -1,159 +1,78 @@
-# FRAUDE - Framework for Automated Understanding & Discovery of Exploits
+# FRAUDE
 
-> MCP server for authorized pentest tool orchestration with deterministic scope enforcement
+**Framework for Automated Understanding & Discovery of Exploits**
 
-## Overview
+MCP server that lets Claude drive authorized pentest tools (`nmap`, `ffuf`, `nuclei`, `semgrep`, `sublist3r`, `httpx`) inside hardened Docker containers, gated by a deterministic scope-enforcement layer.
 
-FRAUDE is a Model Context Protocol (MCP) server that enables Claude to safely execute authorized pentest tools inside hardened Docker containers. Every operation is gated by a deterministic scope-enforcement layer that ensures no out-of-bounds scanning occurs.
+## Status
 
-## Architecture
+| Phase | Description | State |
+|-------|-------------|-------|
+| 1 | Core Foundation & Scope Safety Engine | **Done** |
+| 2 | Recon & Scan Tooling Integrations | **Done** |
+| 3 | Vulnerability Mapping & HITL Control | **Done** |
+| 4 | Reporting + constrained path suggestions | **Done** — 47/47 tests (no payload generator) |
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Claude (via MCP)                          │
-│                                                              │
-│  ┌─────────────────┐    ┌─────────────────┐               │
-│  │ validate_scope  │───▶│ scope.yaml      │               │
-│  └─────────────────┘    └─────────────────┘               │
-│           │                      │                            │
-│           ▼                      ▼                            │
-│  ┌─────────────────────────────────────────┐                │
-│  │   Scope Validator (safety-critical)   │                │
-│  │   - IP CIDR matching                    │                │
-│  │   - Domain/wildcard matching            │                │
-│  │   - Exclusion beats allow               │                │
-│  └─────────────────────────────────────────┘                │
-│           │                                              │
-│           ▼                                              │
-│  ┌─────────────────────────────────────────┐             │
-│  │ Docker Wrapper (hardened execution)     │             │
-│  │ - Read-only filesystem                   │             │
-│  │ - Dropped capabilities                   │             │
-│  │ - Non-root user (UID 1000)               │             │
-│  │ - Resource limits                        │             │
-│  │ - Command allowlisting                   │             │
-│  └─────────────────────────────────────────┘             │
-│           │                                              │
-│           ▼                                              │
-│  ┌─────────────────┐    ┌─────────────────┐               │
-│  │   audit.log     │    │ Tool Containers │               │
-│  │   (JSONL)       │    │ (nmap, etc.)    │               │
-│  └─────────────────┘    └─────────────────┘               │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## Design Philosophy
-
-FRAUDE follows a **fail-closed** security model:
-
-1. **Scope Safety Engine** (Phase 1): Validates every target before execution
-2. **Chokepoint Pattern**: All tool execution goes through `run_containerized_tool()`
-3. **Audit Trail**: Every decision is logged to JSONL for later analysis
-4. **Hardened Containers**: Default security flags prevent privilege escalation
-
-## Installation
+## Quick start
 
 ```bash
 cd fraude
-python3 -m venv .venv
-source .venv/bin/activate
+python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
+cp scope.yaml.example scope.yaml   # edit with real authorized targets
+python -m pytest tests/ -v         # confirm 47/47
 ```
 
-## Configuration
+Run the MCP server (stdio transport for Claude Desktop / Claude Code):
 
 ```bash
-cp scope.yaml.example scope.yaml
-# Edit scope.yaml with your authorized targets
+export FRAUDE_SCOPE=./scope.yaml
+python -m fraude.server
 ```
 
-Example `scope.yaml`:
+## Phase 3 tools + HITL
 
-```yaml
-metadata:
-  authorized_by: "Your Name <you@example.com>"
-  
-ip_ranges:
-  - "192.168.1.0/24"
-  - "10.0.0.50"
+| Tool | Image | HITL |
+|------|-------|------|
+| `run_nuclei_scan` | `projectdiscovery/nuclei` | **Required** (`confirm=True`) |
+| `run_semgrep_scan` | `semgrep/semgrep` | **Required** (`confirm=True`) |
 
-domains:
-  - "example.com"
-  - "*.example.org"
+High-risk tools refuse to run unless `confirm=True` is passed. Scope gate still fires first. Findings are severity-grouped / capped before returning to the LLM.
 
-exclusions:
-  ip_ranges:
-    - "192.168.1.100"  # Never scan this IP
-  domains:
-    - "internal.example.com"  # Exclude internal subdomains
-```
+## Phase 2 tools
 
-## Usage
+| Tool | Image (default) | Notes |
+|------|-----------------|-------|
+| `run_nmap_scan` | `instrumentisto/nmap` | XML → compressed open ports/services |
+| `run_subdomain_enum` | `projectdiscovery/subfinder` | JSON → capped subdomain list |
+| `run_http_probe` | `projectdiscovery/httpx` | JSONL → live hosts + status/title/tech |
 
-### As MCP Server
+All three go through the single scope choke point. Output is always compressed before returning to the LLM.
 
-```python
-from fraude import validate_target, get_scope
-
-scope = get_scope()
-is_allowed = validate_target('example.com', scope)
-```
-
-### Via MCP Tools
-
-The server exposes `validate_scope` tool that returns:
-
-```json
-{
-  "allowed": true,
-  "reason": "Target is in authorized scope",
-  "target": "example.com"
-}
-```
-
-## Development
-
-### Running Tests
+**Live smoke test** (requires Docker):
 
 ```bash
-python -m pytest tests/ -v
+# after editing scope.yaml to include scanme.nmap.org
+python -c "
+from fraude.server import run_nmap_scan
+print(run_nmap_scan('scanme.nmap.org'))
+"
 ```
 
-### Project Structure
+## Phase 1 architecture
 
-```
-fraude/
-├── fraude/
-│   ├── server.py              # MCP entrypoint
-│   ├── scope/
-│   │   ├── models.py        # Data classes
-│   │   └── validator.py     # Scope enforcement
-│   ├── executor/
-│   │   └── docker_wrapper.py # Container orchestration
-│   └── audit/
-│       └── logger.py        # JSONL audit logging
-├── tests/
-│   ├── test_scope_validator.py
-│   └── test_docker_wrapper.py
-├── scope.yaml.example         # Config template
-└── requirements.txt
-```
+- **Scope fails closed** on load (missing file, bad YAML, empty scope, missing `authorized_by`, invalid CIDR).
+- **Wildcards are subdomain-only** — `*.example.com` never matches the apex.
+- **Exclusions always beat inclusions**.
+- **Single choke point**: every future tool must call `fraude.executor.run_containerized_tool()`, which itself calls `validate_target()` before any `docker run`.
+- Containers default to `--read-only --cap-drop ALL --user 65534 --memory 512m --cpus 1.0 --rm`.
 
-## Roadmap
+## Phase 4 notes
 
-- **Phase 1** ✅: Core Foundation & Scope Safety Engine
-- **Phase 2**: Recon & Scan Tooling Integrations (nmap, sublist3r, httpx)
-- **Phase 3**: Vulnerability Mapping & HITL Control (nuclei, semgrep)
-- **Phase 4**: Exploitation Support & Automated Reporting
+- `generate_report` builds a markdown report from the JSONL audit log only.
+- `suggest_attack_path` returns high-level, non-actionable guidance and requires `confirm=True`.
+- **No free-form payload / exploit / WAF-bypass generator is included.** That stays out of scope by design.
 
-## Security Notes
+## License / Authorization
 
-- `--read-only` is on by default (some tools need `--tmpfs /tmp`)
-- All capabilities are dropped (`--cap-drop ALL`)
-- Non-root execution (UID 1000)
-- 5-minute timeout on all operations
-- Wildcards are subdomain-only: `*.example.com` ≠ `example.com`
-
-## License
-
-MIT
+This software is intended **only** for use against systems you are explicitly authorized to test. The scope engine exists to make accidental off-scope activity hard; it is not a substitute for legal authorization.

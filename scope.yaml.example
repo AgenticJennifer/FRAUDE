@@ -1,28 +1,39 @@
-# FRAUDE Scope Configuration Example
-# Copy this file to scope.yaml and edit for your environment
+# FRAUDE scope definition
+# Copy this file to scope.yaml and edit before running the server.
+# The loader fails closed: missing authorized_by, empty scope, or bad CIDR
+# will refuse to start.
 
-# Metadata - required for all scope configs
 metadata:
-  authorized_by: "Your Name <you@example.com>"  # Who authorized this scope
-  description: "Pentest scope for example.com engagement"  # Optional description
+  authorized_by: "security-team@example.com"   # REQUIRED — non-empty
+  engagement_name: "example-engagement"
+  notes: "Replace with real authorization ticket / SOW reference"
 
-# IP ranges in CIDR notation
-# Supports both single IPs and CIDR blocks
-ip_ranges:
-  - "192.168.1.0/24"
-  - "10.0.0.50"  # Single IP as /32
-
-# Domains to target
-# Supports wildcards for subdomains (e.g., *.example.com matches sub.example.com)
+# At least one of domains or ip_ranges must be present.
 domains:
-  - "example.com"
-  - "sub.example.com"
-  - "*.example.org"
+  - example.com                # exact apex
+  - "*.example.com"            # subdomains only (does NOT match example.com)
+  - scanme.nmap.org            # public test target provided by nmap project
 
-# Exclusion list - these are ALWAYS denied, even if they match above
-# Takes precedence over allow lists
-exclusions:
-  domains:
-    - "internal.example.com"  # Exclude internal subdomains
-  ip_ranges:
-    - "192.168.1.100"  # Exclude specific IP
+ip_ranges:
+  - "127.0.0.0/8"              # localhost
+  - "10.0.0.0/8"               # RFC1918 example
+  # - "203.0.113.0/24"         # documentation range
+
+# Exclusions always win over inclusions
+exclude_domains:
+  - "admin.example.com"
+  # - "*.internal.example.com"
+
+exclude_ip_ranges:
+  # - "10.0.0.1/32"
+
+# Optional: restrict which ports may be scanned (omit or null = any port)
+# ports: [80, 443, 8080]
+
+# When true, every domain target is resolved and the resulting IPs
+# must also fall inside ip_ranges (or the domain itself must be listed).
+strict_resolution: false
+
+# When true, a domain must appear in the domains list even if its
+# resolved IP happens to land inside an authorized CIDR.
+require_dns_match: false
