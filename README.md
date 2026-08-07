@@ -1,6 +1,6 @@
 # Fraude
 
-![Fraude](assets/fraude-banner.svg)
+![Not Claude. FRAUDE.](assets/fraude-readme-hero.jpg)
 
 **Framework for Automated Understanding & Discovery of Exploits**
 
@@ -74,7 +74,7 @@ python -m fraude.ui.app
 # open http://127.0.0.1:8787
 ```
 
-Banner: `assets/fraude-banner.svg` · Mark: `assets/fraude-mark.svg`
+Hero: `assets/fraude-readme-hero.jpg` · Banner: `assets/fraude-banner.svg` · Mark: `assets/fraude-mark.svg`
 
 ## Tools
 
