@@ -1,10 +1,22 @@
-# Fraude
+<p align="center">
+  <img src="assets/fraude-readme-hero.svg" alt="Not Claude. FRAUDE." width="720"/>
+</p>
 
-![Not Claude. FRAUDE.](assets/fraude-readme-hero.svg)
+<h1 align="center">Fraude</h1>
 
-**Framework for Automated Understanding & Discovery of Exploits**
+<p align="center">
+  <strong>Framework for Automated Understanding &amp; Discovery of Exploits</strong>
+</p>
 
-MCP server that lets Claude drive authorized pentest tools (`nmap`, `nuclei`, `semgrep`, `subfinder`, `httpx`) inside hardened Docker containers, gated by a deterministic scope-enforcement layer.
+<p align="center">
+  MCP server that lets Claude drive authorized pentest tools
+  (<code>nmap</code>, <code>nuclei</code>, <code>semgrep</code>, <code>subfinder</code>, <code>httpx</code>)
+  inside hardened Docker containers, gated by a deterministic scope-enforcement layer.
+</p>
+
+<p align="center">
+  <a href="https://github.com/AgenticJennifer/FRAUDE">github.com/AgenticJennifer/FRAUDE</a>
+</p>
 
 ## Status
 
@@ -74,8 +86,6 @@ python -m fraude.ui.app
 # open http://127.0.0.1:8787
 ```
 
-Hero: `assets/fraude-readme-hero.svg` · Mark: `assets/fraude-mark.svg`
-
 ## Tools
 
 | Tool | HITL |
@@ -86,6 +96,35 @@ Hero: `assets/fraude-readme-hero.svg` · Mark: `assets/fraude-mark.svg`
 | `generate_report` | no |
 
 High-risk tools refuse unless `confirm=True`. Scope still runs first.
+
+## Brand assets
+
+Use these when linking, posting, or embedding Fraude:
+
+| File | Use |
+|------|-----|
+| [`assets/fraude-readme-hero.svg`](assets/fraude-readme-hero.svg) | README / LinkedIn-style hero (“Not Claude. FRAUDE.”) |
+| [`assets/fraude-banner.svg`](assets/fraude-banner.svg) | Wide wordmark banner |
+| [`assets/fraude-mark.svg`](assets/fraude-mark.svg) | Small mark (avatar, favicon, emoji) |
+| `assets/fraude-readme-hero.jpg` | Raster for LinkedIn upload / GitHub social preview |
+
+**Markdown (centered banner):**
+
+```html
+<p align="center">
+  <img src="assets/fraude-readme-hero.svg" alt="Fraude" width="720"/>
+</p>
+```
+
+**Small mark:**
+
+```html
+<img src="assets/fraude-mark.svg" alt="Fraude" width="64"/>
+```
+
+**GitHub social preview:** Repo → Settings → General → Social preview → upload `fraude-readme-hero.jpg`.
+
+**LinkedIn:** Upload the JPG; SVG often fails on social platforms.
 
 ## Safety rules
 
