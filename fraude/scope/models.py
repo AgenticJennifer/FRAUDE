@@ -56,6 +56,10 @@ class Target:
         except ValueError:
             return cls(raw=value, target_type="domain", hostname=value)
 
+    @property
+    def value(self) -> str:
+        return self.raw
+
     def get_hostname(self) -> str:
         return self.hostname or self.raw
 
@@ -116,3 +120,25 @@ class ScopeConfig:
     @property
     def authorized_by(self) -> str:
         return self.metadata.authorized_by
+
+    def has_targets(self) -> bool:
+        return bool(self.ip_ranges or self.domains)
+
+    def to_dict(self) -> dict:
+        return {
+            "metadata": {
+                "authorized_by": self.authorized_by,
+                "engagement_name": self.metadata.engagement_name,
+                "notes": self.metadata.notes,
+            },
+            "authorized_by": self.authorized_by,
+            "ip_ranges": list(self.ip_ranges),
+            "domains": list(self.domains),
+            "exclusions": {
+                "domains": list(self.exclusions.get("domains", [])),
+                "ip_ranges": list(self.exclusions.get("ip_ranges", [])),
+            },
+            "ports": self.ports,
+            "strict_resolution": self.strict_resolution,
+            "require_dns_match": self.require_dns_match,
+        }
